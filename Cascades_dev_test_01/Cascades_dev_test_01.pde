@@ -260,16 +260,20 @@ void draw() {
           msg.add(map(posXTable[rowIndex], minX, maxX, -1.0, 1.0)); // x  -1 - 1
           msg.add(map(posYTable[rowIndex], minY, maxY, -1.0, 1.0)); // y  -1 - 1
           osc.send(msg, supercollider);
-          rowIndex++;
           
        } else {
          //println("prevent OSC because of debounce");
        }
           
+
+
+
         //println("OSC: "+msg);
   
         tanks[idTable[rowIndex]].setFill(color( int(map(ampTable[rowIndex], 0.0, 100, 10, 255)), int(map(ampTable[rowIndex], 0.0, 100, 10, 255)), int(map(ampTable[rowIndex], 0.0, 100, 10, 255)), 180)) ;
         
+        rowIndex++;
+                
         background(map(ampTable[rowIndex],limits.getFloat(0,1),limits.getFloat(0,0),200,55), map(posXTable[rowIndex],0,300,0,250), map(posYTable[rowIndex],0,300,0,150));
         
       }

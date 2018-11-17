@@ -108,43 +108,6 @@ void setup() {
 
   
 
-  /*
-  // Data
-  table = loadTable("Cascadas/V_06532.csv");
-  limits = loadTable("Cascadas/L_06632.csv");
-
-
-  idTable = new   int[table.getRowCount()];
-  timeTable = new float[table.getRowCount()];
-  ampTable  = new float[table.getRowCount()];
-  posXTable = new float[table.getRowCount()];
-  posYTable = new float[table.getRowCount()];
-  
-  // Limits
-  maxA = 0.0;
-  minA = 0.0;
-  maxX = 0.0;
-  minX = 0.0;
-  maxY = 0.0;
-  minY = 0.0;
-
-  int i = 0;
-  for (TableRow row : table.rows()) {
-    int     id = row.getInt(0);
-    float  amp = row.getFloat(1);
-    float time = row.getFloat(2);
-    float xpos = row.getFloat(3);
-    float ypos = row.getFloat(4);
-    idTable[i]   = id;    
-    timeTable[i] = time;
-    ampTable[i]  = amp;
-    posXTable[i] = xpos;
-    posYTable[i] = ypos;
-    i++;
-    //println(id, amp, time, xpos, ypos);
-  }
-
-  */
   for (int k=0; k<300; ) {
     tanks[k] = loadShape("tanque-O.obj");
     tanks[k].setFill(color(0,20));
@@ -172,29 +135,16 @@ void draw() {
   directionalLight(244, 244, 244, -dirX, -dirY, -2);
   
 //  println( millis() % 1000 );
-  if( millis() % 1000 < 300 && ! addedMillis ) {
-  
-    // descomeantar para que incremente como valor comun hy corriente
-//    timer = timer + (1.0f);
-    timer = timer + (1.0f);
-    addedMillis = true;
-  }
-  
-  if( millis() % 1000 > 300 ) {
-    addedMillis = false;
-  }
-  
-  //timer = floor( timer );
-  float decimals =  ( millis() % 1000 );
-  
-  
-  clock = timer + (decimals / (float) 1000);
   
   // HIT
 
  if( rowIndex+1 < table.getRowCount() ) {
       
       float diff = abs(timeTable[rowIndex+1]-timeTable[rowIndex]);
+      println( "clocks: " + timeTable[rowIndex] + " - " + timeTable[rowIndex+1]); 
+      if(diff< 0.2){
+        clockSpeed = 0.25f;
+      }
       
       if(diff< 0.5){
         clockSpeed = 0.5f;
@@ -211,20 +161,47 @@ void draw() {
        if(diff>=10){
         clockSpeed = 10.0f;
       }
+      
+     if(diff>=20){
+        clockSpeed = 20.0f;
+      }
+
+
+        println( "diff: " + diff );
+  println( "clockSpeed: " + clockSpeed );
       /*
-          println( "diff: " + diff );
   
     
         println( "clock: " + clock );
-        println( "clockSpeed: " + clockSpeed );
+      
     */
     }
 
 
+
+  if( millis() % floor(1000) < 200 && ! addedMillis ) {
+  
+    // descomeantar para que incremente como valor comun hy corriente
+//    timer = timer + (1.0f);
+    timer = timer + (1.0f * clockSpeed) ;
+    addedMillis = true;
+  }
+  
+  if( millis() % 1000 > 200 ) {
+    addedMillis = false;
+  }
+  
+  //timer = floor( timer );
+  float decimals =  ( millis() % 1000 );
+  
+  
+  clock = timer + (decimals / (float) 1000);
+  
+  
+  
   if (rowIndex < table.getRowCount()-1) {
-   // if ( ( clock * clockSpeed ) > timeTable[rowIndex] - timeTable[0]) {
-        
     if ( ( clock ) > timeTable[rowIndex] - timeTable[0]) {
+        
       
       
         
@@ -241,7 +218,7 @@ void draw() {
         minY = -100.0 ; maxY = 600.0;
         
         hitCount++;
-        //println(nf(hitCount,3)+" HIT on tank# " + idTable[rowIndex]);
+        println(nf(hitCount,3)+" HIT on tank# " + idTable[rowIndex]);
         
         // OSC Message
         
@@ -280,6 +257,7 @@ void draw() {
       //montana.scale(map(ampTable[rowIndex],  minA, maxA,  0.8, 2.2));
    
   } else {
+    
     println("ended");
     
     resetTimer();
@@ -364,13 +342,28 @@ void loadFile( int index ) {
     ampTable[i]  = amp;
     posXTable[i] = xpos;
     posYTable[i] = ypos;
+    
     i++;
     //println(id, amp, time, xpos, ypos);
   }
+  
+  timeTable = sort(timeTable);
 
+  i = 0;
+  for (TableRow row : table.rows()) {
+    println(timeTable[i]);
+    i++;
+  }
 
   lastReadFile = index;
   rowIndex = 0;
   println("finished reading:"+index);
+  
+  
+  for (int k=0; k<300; ) {
+    tanks[k].setFill(color(0,20));
+    k++;
+  }
+  
 
 } 

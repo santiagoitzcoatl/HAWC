@@ -142,13 +142,19 @@ void draw() {
       
       float diff = abs(timeTable[rowIndex+1]-timeTable[rowIndex]);
       println( "clocks: " + timeTable[rowIndex] + " - " + timeTable[rowIndex+1]); 
-      if(diff< 0.2){
+      if(diff< 0.5){
         clockSpeed = 0.25f;
       }
-      
-      if(diff< 0.5){
-        clockSpeed = 0.5f;
+      if(diff< 0.2){
+        clockSpeed = 0.125f;
       }
+      if(diff< 0.1){
+        clockSpeed = 0.0625f;
+      }
+      if(diff< 0.05){
+        clockSpeed = 0.03125f;
+      }
+      
       
       if(diff>= 0.5 && diff < 4){
         clockSpeed = 1.0f;
@@ -315,6 +321,8 @@ void loadFile( int index ) {
   table = loadTable("Cascadas/V_"+nf(index,5)+".csv");
   limits = loadTable("Cascadas/L_"+nf(index,5)+".csv");
 
+  table.setColumnType(2,"float");
+  table.sort( 2 );
 
   idTable = new   int[table.getRowCount()];
   timeTable = new float[table.getRowCount()];
@@ -347,7 +355,7 @@ void loadFile( int index ) {
     //println(id, amp, time, xpos, ypos);
   }
   
-  timeTable = sort(timeTable);
+//  timeTable = sort(timeTable);
 
   i = 0;
   for (TableRow row : table.rows()) {

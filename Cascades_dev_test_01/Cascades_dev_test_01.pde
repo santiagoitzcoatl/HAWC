@@ -49,7 +49,7 @@ int hitCount = 0;
 int lastReadFile;
 float lastReadTime;
 
-float clockSpeed = 0.5f;
+float clockSpeed = 1f;
 
 int startFileIndex = 1;
 
@@ -63,7 +63,16 @@ boolean addedMillis;
 
 float timer;
 
+
+int debounceTime;
+boolean debounced;
+int lastTriggerTime;
+
 void setup() {
+  
+  debounced = false;
+  lastTriggerTime = 0;
+  debounceTime = 50;
   
   lastReadTime = 0;
   
@@ -167,7 +176,7 @@ void draw() {
   
     // descomeantar para que incremente como valor comun hy corriente
 //    timer = timer + (1.0f);
-    timer = timer + (1.0f * clockSpeed);
+    timer = timer + (1.0f);
     addedMillis = true;
   }
   
@@ -182,64 +191,89 @@ void draw() {
   clock = timer + (decimals / (float) 1000);
   
   // HIT
-  if (rowIndex < table.getRowCount()-1) {
-    if (clock > timeTable[rowIndex] - timeTable[0]) {
+
+ if( rowIndex+1 < table.getRowCount() ) {
       
-  if( rowIndex+1 < table.getRowCount() ) {
-    
-    float diff = abs(timeTable[rowIndex+1]-timeTable[rowIndex]);
-    
-    if(diff< 0.5){
-      clockSpeed = 0.5f;
-    }
-    
-    if(diff>= 0.5 && diff < 4){
-      clockSpeed = 1.0f;
-    }
-    
-    if(diff>=4){
-      clockSpeed = 10.0f;
-    }
-        println( "diff: " + diff );
-
-  
-      println( "clock: " + clock );
-      println( "clockSpeed: " + clockSpeed );
-  
-  }
-
-  
+      float diff = abs(timeTable[rowIndex+1]-timeTable[rowIndex]);
+      
+      if(diff< 0.5){
+        clockSpeed = 0.5f;
+      }
+      
+      if(diff>= 0.5 && diff < 4){
+        clockSpeed = 1.0f;
+      }
+      
+      if(diff>=4){
+        clockSpeed = 3.0f;
+      }
+      
+       if(diff>=10){
+        clockSpeed = 10.0f;
+      }
       /*
-      for (int i=0; i<300; ) {
-        tanks[i].setFill(color(0,0.5));
-        i++;
-      }*/
-      
-      minA = limits.getFloat(0,1); maxA = limits.getFloat(0,0);
-      //minX = limits.getFloat(0,3); maxX = limits.getFloat(0,2);
-      minX = -100.0 ; maxX = 300.0;
-      //minY = limits.getFloat(0,5); maxY = limits.getFloat(0,4);
-      minY = -100.0 ; maxY = 600.0;
-      
-      hitCount++;
-      //println(nf(hitCount,3)+" HIT on tank# " + idTable[rowIndex]);
-      
-      // OSC Message
-      OscMessage msg = new OscMessage("/starhit");
-      msg.add(idTable[rowIndex]); // ID
-      msg.add(map(ampTable[rowIndex],  minA, maxA,  0.1, 1.0)); // amp 0 - 1
-      msg.add(map(posXTable[rowIndex], minX, maxX, -1.0, 1.0)); // x  -1 - 1
-      msg.add(map(posYTable[rowIndex], minY, maxY, -1.0, 1.0)); // y  -1 - 1
-      osc.send(msg, supercollider);
-      rowIndex++;
-      
-      //println("OSC: "+msg);
-
-      tanks[idTable[rowIndex]].setFill(color( int(map(ampTable[rowIndex], 0.0, 100, 10, 255)), int(map(ampTable[rowIndex], 0.0, 100, 10, 255)), int(map(ampTable[rowIndex], 0.0, 100, 10, 255)), 180)) ;
-      
-      background(map(ampTable[rowIndex],limits.getFloat(0,1),limits.getFloat(0,0),200,55), map(posXTable[rowIndex],0,300,0,250), map(posYTable[rowIndex],0,300,0,150));
-      //montana.scale(map(ampTable[rowIndex],  minA, maxA,  0.8, 2.2));
+          println( "diff: " + diff );
+  
+    
+        println( "clock: " + clock );
+        println( "clockSpeed: " + clockSpeed );
+    */
     }
+
+
+  if (rowIndex < table.getRowCount()-1) {
+    if ( ( clock * clockSpeed ) > timeTable[rowIndex] - timeTable[0]) {
+        
+      
+      
+        
+        /*
+        for (int i=0; i<300; ) {
+          tanks[i].setFill(color(0,0.5));
+          i++;
+        }*/
+        
+        minA = limits.getFloat(0,1); maxA = limits.getFloat(0,0);
+        //minX = limits.getFloat(0,3); maxX = limits.getFloat(0,2);
+        minX = -100.0 ; maxX = 300.0;
+        //minY = limits.getFloat(0,5); maxY = limits.getFloat(0,4);
+        minY = -100.0 ; maxY = 600.0;
+        
+        hitCount++;
+        //println(nf(hitCount,3)+" HIT on tank# " + idTable[rowIndex]);
+        
+        // OSC Message
+        
+        if( millis() > lastTriggerTime + debounceTime ) {
+          debounced = false;
+        }
+        if( ! debounced ) {
+      
+          //println("send OSC");
+          debounced = true;
+          lastTriggerTime = millis();
+          
+          OscMessage msg = new OscMessage("/starhit");
+          msg.add(idTable[rowIndex]); // ID
+          msg.add(map(ampTable[rowIndex],  minA, maxA,  0.1, 1.0)); // amp 0 - 1
+          msg.add(map(posXTable[rowIndex], minX, maxX, -1.0, 1.0)); // x  -1 - 1
+          msg.add(map(posYTable[rowIndex], minY, maxY, -1.0, 1.0)); // y  -1 - 1
+          osc.send(msg, supercollider);
+          rowIndex++;
+          
+       } else {
+         //println("prevent OSC because of debounce");
+       }
+          
+        //println("OSC: "+msg);
+  
+        tanks[idTable[rowIndex]].setFill(color( int(map(ampTable[rowIndex], 0.0, 100, 10, 255)), int(map(ampTable[rowIndex], 0.0, 100, 10, 255)), int(map(ampTable[rowIndex], 0.0, 100, 10, 255)), 180)) ;
+        
+        background(map(ampTable[rowIndex],limits.getFloat(0,1),limits.getFloat(0,0),200,55), map(posXTable[rowIndex],0,300,0,250), map(posYTable[rowIndex],0,300,0,150));
+        
+      }
+      //montana.scale(map(ampTable[rowIndex],  minA, maxA,  0.8, 2.2));
+   
   } else {
     println("ended");
     

@@ -5,6 +5,10 @@ import peasy.*;
 import oscP5.*;
 import netP5.*;
 
+
+int startFileIndex = 1;
+float speedMultiplier = 1.0f;
+
 // CSV handler
 Table table;
 Table limits;
@@ -51,7 +55,6 @@ float lastReadTime;
 
 float clockSpeed = 1f;
 
-int startFileIndex = 1;
 
 
 // OSC
@@ -152,32 +155,32 @@ void draw() {
         clockSpeed = 0.25f;
       }
       if(diff< 0.05){
-        clockSpeed = 0.06225f;
+        clockSpeed = 0.125f;
       }
       
       
       if(diff>= 0.5 && diff < 2){
-        clockSpeed = 1.0f;
-      }
-      
-      if(diff>=2){
         clockSpeed = 2.0f;
       }
       
-       if(diff>=4){
+      if(diff>=2){
         clockSpeed = 4.0f;
       }
       
+       if(diff>=4){
+        clockSpeed = 8.0f;
+      }
+      
      if(diff>=10){
-        clockSpeed = 10.0f;
+        clockSpeed = 15.0f;
       }
       if(diff>=20){
-        clockSpeed = 20.0f;
+        clockSpeed = 25.0f;
       }
 
 
-        
-      /*
+        /*
+      
   println( "diff: " + diff );
   println( "clockSpeed: " + clockSpeed );
     
@@ -192,7 +195,7 @@ void draw() {
   
     // descomeantar para que incremente como valor comun hy corriente
 //    timer = timer + (1.0f);
-    timer = timer + (1.0f * clockSpeed) ;
+    timer = timer + (1.0f * (clockSpeed*speedMultiplier)) ;
     addedMillis = true;
   }
   
@@ -201,7 +204,7 @@ void draw() {
   }
   
   //timer = floor( timer );
-  float decimals =  ( millis() % 1000 );
+  float decimals =  ( millis() % 1000 ) * clockSpeed;
   
   
   clock = timer + (decimals / (float) 1000);

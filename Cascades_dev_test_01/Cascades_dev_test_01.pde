@@ -141,42 +141,45 @@ void draw() {
  if( rowIndex+1 < table.getRowCount() ) {
       
       float diff = abs(timeTable[rowIndex+1]-timeTable[rowIndex]);
-      println( "clocks: " + timeTable[rowIndex] + " - " + timeTable[rowIndex+1]); 
+      
       if(diff< 0.5){
-        clockSpeed = 0.25f;
+        clockSpeed = 0.75f;
       }
       if(diff< 0.2){
-        clockSpeed = 0.125f;
+        clockSpeed = 0.5f;
       }
       if(diff< 0.1){
-        clockSpeed = 0.0625f;
+        clockSpeed = 0.25f;
       }
       if(diff< 0.05){
-        clockSpeed = 0.03125f;
+        clockSpeed = 0.06225f;
       }
       
       
-      if(diff>= 0.5 && diff < 4){
+      if(diff>= 0.5 && diff < 2){
         clockSpeed = 1.0f;
       }
       
-      if(diff>=4){
-        clockSpeed = 3.0f;
+      if(diff>=2){
+        clockSpeed = 2.0f;
       }
       
-       if(diff>=10){
+       if(diff>=4){
+        clockSpeed = 4.0f;
+      }
+      
+     if(diff>=10){
         clockSpeed = 10.0f;
       }
-      
-     if(diff>=20){
+      if(diff>=20){
         clockSpeed = 20.0f;
       }
 
 
-        println( "diff: " + diff );
-  println( "clockSpeed: " + clockSpeed );
+        
       /*
-  
+  println( "diff: " + diff );
+  println( "clockSpeed: " + clockSpeed );
     
         println( "clock: " + clock );
       

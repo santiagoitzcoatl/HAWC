@@ -222,8 +222,9 @@ void draw() {
 
 
   if (rowIndex < table.getRowCount()-1) {
-    if ( ( clock * clockSpeed ) > timeTable[rowIndex] - timeTable[0]) {
+   // if ( ( clock * clockSpeed ) > timeTable[rowIndex] - timeTable[0]) {
         
+    if ( ( clock ) > timeTable[rowIndex] - timeTable[0]) {
       
       
         

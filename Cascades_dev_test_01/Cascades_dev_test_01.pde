@@ -204,7 +204,7 @@ void draw() {
   }
   
   //timer = floor( timer );
-  float decimals =  ( millis() % 1000 ) * clockSpeed;
+  float decimals =  ( millis() % 1000 ) * (clockSpeed*speedMultiplier);
   
   
   clock = timer + (decimals / (float) 1000);
